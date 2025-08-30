@@ -1,0 +1,40 @@
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+
+#[derive(Debug, Deserialize)]
+pub struct Workflow {
+    pub nodes: Vec<Node>,
+    pub connections: HashMap<String, Vec<Connection>>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Node {
+    pub id: u32,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub node_type: String,
+    pub parameters: serde_yaml::Value,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Connection {
+    pub to: u32,
+}
+
+// Data that flows between nodes
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkflowData {
+    pub items: Vec<serde_json::Value>,
+}
+
+impl WorkflowData {
+    pub fn new() -> Self {
+        Self {
+            items: vec![serde_json::json!({"message": "workflow started"})],
+        }
+    }
+
+    pub fn clear() -> Self {
+        Self { items: vec![] }
+    }
+}

@@ -1,0 +1,32 @@
+nodes:
+  - id: 1
+    name: Start
+    plugin: default
+    type: trigger
+    parameters: {}
+
+  - id: 2
+    name: Fetch Data
+    plugin: http
+    type: action
+    parameters:
+      url: "https://api.example.com/data"
+      method: GET
+      headers:
+        Authorization: "Bearer {{ token }}"
+
+  - id: 3
+    name: Send Data
+    plugin: http
+    type: action
+    parameters:
+      url: "https://api.example.com/data"
+      method: POST
+      headers:
+        Authorization: "Bearer {{ token }}"
+
+connections:
+  "1":
+    - to: 2
+  "2":
+    - to: 3

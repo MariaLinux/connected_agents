@@ -1,0 +1,8 @@
+plugin_settings:
+  - name: http
+    enabled: true
+  - name: function
+    enabled: true
+  - name: function
+    enabled: true
+    
