@@ -3,7 +3,10 @@
   "packages": [
     "rustc@latest",
     "rust-analyzer@2025-08-04",
-    "cargo@latest"
+    "cargo@latest",
+    "openssl@latest",
+    "openssl.dev",
+    "pkg-config@latest"
   ],
   "shell": {
     "init_hook": [
