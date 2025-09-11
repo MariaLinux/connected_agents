@@ -35,5 +35,3 @@ impl NodeExecutorFactory for TriggerFactory {
         "default"
     }
 }
-
-//TODO: make triggers in a separate crate

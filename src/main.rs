@@ -3,12 +3,15 @@ mod traits;
 mod registry;
 mod nodes;
 mod flow;
+mod args;
 
+use clap::Parser;
 use config::{Workflow, Node, WorkflowData, Settings};
 use registry::NodeRegistry;
-use nodes::{TriggerFactory, HttpFactory, FunctionFactory};
+use nodes::{TriggerFactory, ActionHttpFactory, FunctionFactory};
 use flow::FlowGraph;
 use traits::NodeExecutorFactory;
+use args::{Args};
 
 use petgraph::graph::NodeIndex;
 use petgraph::{Graph, Direction};
@@ -18,21 +21,33 @@ use std::fs;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::try_parse().map_err(|e| {
+        eprintln!("Failed to parse arguments: {}", e);
+        std::process::exit(1);
+    })?;
+
     println!("🚀 Starting Modular Workflow Engine");
     
-    let setting_yaml = fs::read_to_string("settings.yaml")?;
+    println!("📋 Loading settings from {}, workflow from {:#?}", args.settings, args.workflow);
+    
+    let setting_yaml = fs::read_to_string(args.settings)?;
     let settings: Settings = serde_yaml::from_str(&setting_yaml)?;
     
     // Initialize plugin registry
     let mut registry = NodeRegistry::new();
     try_register(&mut registry, &settings, TriggerFactory);
-    try_register(&mut registry, &settings, HttpFactory);
+    try_register(&mut registry, &settings, ActionHttpFactory);
     try_register(&mut registry, &settings, FunctionFactory);
     
     println!("📦 Registered node types: {:?}", registry.supported_types());
     
     // Load workflow YAML
-    let yaml_str = fs::read_to_string("workflow.yaml")?;
+    if args.workflow.is_none() {
+        eprintln!("No workflow file specified");
+        std::process::exit(1);
+    }
+    let workflow_path = args.workflow.unwrap();
+    let yaml_str = fs::read_to_string(workflow_path)?;
     let workflow: Workflow = serde_yaml::from_str(&yaml_str)?;
 
     println!("📋 Loaded workflow with {} nodes", workflow.nodes.len());
@@ -145,5 +160,3 @@ where
         registry.register(factory);
     }
 }
-
-//TODO: add cli args

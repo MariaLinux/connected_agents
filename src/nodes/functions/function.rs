@@ -58,5 +58,4 @@ impl NodeExecutorFactory for FunctionFactory {
     }
 }
 
-//TODO: make functions in a separate crate
 //TODO: implement js engine

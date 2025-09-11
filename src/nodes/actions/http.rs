@@ -6,9 +6,9 @@ use serde_json::json;
 use std::future::Future;
 use std::pin::Pin;
 
-pub struct HttpExecutor;
+pub struct ActionHttpExecutor;
 
-impl NodeExecutor for HttpExecutor {
+impl NodeExecutor for ActionHttpExecutor {
     // fn node_type(&self) -> &'static str {
     //     "http"
     // }
@@ -46,11 +46,11 @@ impl NodeExecutor for HttpExecutor {
     }
 }
 
-pub struct HttpFactory;
+pub struct ActionHttpFactory;
 
-impl NodeExecutorFactory for HttpFactory {
+impl NodeExecutorFactory for ActionHttpFactory {
     fn create(&self) -> Box<dyn NodeExecutor> {
-        Box::new(HttpExecutor)
+        Box::new(ActionHttpExecutor)
     }
 
     fn supported_type(&self) -> &'static str {
@@ -62,5 +62,4 @@ impl NodeExecutorFactory for HttpFactory {
     }
 }
 
-//TODO: make actions requests in a separate crate
 //TODO: implement http requests
