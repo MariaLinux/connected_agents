@@ -6,7 +6,7 @@ mod flow;
 mod args;
 
 use clap::Parser;
-use config::{Workflow, Node, WorkflowData, Settings};
+use config::{Workflow, Node, WorkflowData, WorkflowDataType, Settings};
 use registry::NodeRegistry;
 use nodes::{TriggerFactory, ActionHttpFactory, FunctionFactory};
 use flow::FlowGraph;
@@ -76,7 +76,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let result = execute_workflow(&flow_graph.graph, &execution_order, &flow_graph.index_to_id, &registry).await?;
     
     println!("\n🎉 Workflow completed successfully!");
-    println!("📤 Final output: {}", serde_json::to_string_pretty(&result.items)?);
+    match result.data_type {
+        WorkflowDataType::Json => {
+            println!("📤 Final output: {}", serde_json::to_string_pretty(&result.items)?);
+        },
+        _ => {
+            if let Some(text) = result.text {
+                println!("📤 Final output: metadata:{}\noutput: {}", serde_json::to_string_pretty(&result.items)?, text);
+            } else {
+                println!("📤 Final output: {}", serde_json::to_string_pretty(&result.items)?);
+            }
+        }
+    }
 
     Ok(())
 }
@@ -142,7 +153,10 @@ fn collect_input_data(
         }
 
         WorkflowData {
+            data_type: WorkflowDataType::Json,
             items: merged_items,
+            text: None,
+            bytes: None,
         }
     }
 }

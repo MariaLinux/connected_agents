@@ -10,7 +10,7 @@ nodes:
     plugin: http
     type: action
     parameters:
-      url: "https://api.example.com/data"
+      url: "https://httpbin.org/status/503"
       method: GET
       headers:
         Authorization: "Bearer {{ token }}"

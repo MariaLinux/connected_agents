@@ -22,20 +22,36 @@ pub struct Connection {
     pub to: u32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum WorkflowDataType {
+    Unknown,
+    None,
+    PlainText,
+    Json,
+    Xml,
+    Html,
+}
+
 // Data that flows between nodes
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkflowData {
+    pub data_type: WorkflowDataType,
     pub items: Vec<serde_json::Value>,
+    pub text: Option<String>,
+    pub bytes: Option<Vec<u8>>,
 }
 
 impl WorkflowData {
     pub fn new() -> Self {
         Self {
+            data_type: WorkflowDataType::Json,
             items: vec![serde_json::json!({"message": "workflow started"})],
+            text: None,
+            bytes: None,
         }
     }
 
     pub fn clear() -> Self {
-        Self { items: vec![] }
+        Self { data_type: WorkflowDataType::None, items: vec![], text: None, bytes: None }
     }
 }

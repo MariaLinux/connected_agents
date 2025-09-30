@@ -1,5 +1,5 @@
 use crate::traits::{NodeExecutor, NodeExecutorFactory};
-use crate::config::WorkflowData;
+use crate::config::{WorkflowData, WorkflowDataType};
 use serde_yaml::Value;
 use serde_json::json;
 use std::future::Future;
@@ -33,7 +33,10 @@ impl NodeExecutor for FunctionExecutor {
             }
 
             let output_data = WorkflowData {
+                data_type: WorkflowDataType::Json,
                 items: processed_items,
+                text: None,
+                bytes: None,
             };
 
             println!("✅ Function execution completed");
