@@ -15,7 +15,6 @@ nodes:
       basic_auth:
           username: user
           password: pass
-      bearer_auth: my_token
 
   - id: 3
     name: Send Data
@@ -32,6 +31,11 @@ nodes:
           - key2: value2
         json_message: '{"key1": "value1", "key2": 20}'
       bearer_auth: my_token
+      headers:
+        - Content-Type: application/json
+        - Accept: application/json
+        - Host: httpbin.org
+        
 
 connections:
   "1":

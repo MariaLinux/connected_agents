@@ -91,6 +91,22 @@ impl NodeExecutor for ActionHttpExecutor {
                 if let Some(bearer_auth) = parameters.get("bearer_auth") {
                     builder = builder.bearer_auth(bearer_auth.as_str().unwrap_or(""));
                 }
+                
+                if let Some(headers) = parameters.get("headers") {
+                    if let Some(headers) = headers.as_sequence() {
+                        for header in headers {
+                            if let Some(map) = header.as_mapping() {
+                                for (key, value) in map {
+                                    let key_str = key.as_str().unwrap_or("");
+                                    let value_str = value.as_str().unwrap_or("");
+                                    builder = builder.header(key_str, value_str);
+                                }
+                            } else {
+                                println!("Invalid header: {:?}", header);
+                            }
+                        }
+                    }
+                }
                 let res = builder.send().await?;
                 process_response(res, &mut output_data).await?;
             }
@@ -108,6 +124,22 @@ impl NodeExecutor for ActionHttpExecutor {
                 }
                 if let Some(bearer_auth) = parameters.get("bearer_auth") {
                     builder = builder.bearer_auth(bearer_auth.as_str().unwrap_or(""));
+                }
+                
+                if let Some(headers) = parameters.get("headers") {
+                    if let Some(headers) = headers.as_sequence() {
+                        for header in headers {
+                            if let Some(map) = header.as_mapping() {
+                                for (key, value) in map {
+                                    let key_str = key.as_str().unwrap_or("");
+                                    let value_str = value.as_str().unwrap_or("");
+                                    builder = builder.header(key_str, value_str);
+                                }
+                            } else {
+                                println!("Invalid header: {:?}", header);
+                            }
+                        }
+                    }
                 }
 
                 if let Some(data) = parameters.get("data") {
@@ -177,4 +209,4 @@ impl NodeExecutorFactory for ActionHttpFactory {
     }
 }
 
-//TODO: implement http headers support
+//TODO: implement http DELETE, PATCH, PUT
