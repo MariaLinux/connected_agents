@@ -10,10 +10,12 @@ nodes:
     plugin: http
     type: action
     parameters:
-      url: "https://httpbin.org/status/503"
+      url: "https://httpbin.org/basic-auth/user/pass"
       method: GET
-      headers:
-        Authorization: "Bearer {{ token }}"
+      basic_auth:
+          username: user
+          password: pass
+      bearer_auth: my_token
 
   - id: 3
     name: Send Data
@@ -29,8 +31,7 @@ nodes:
           - key1: value1
           - key2: value2
         json_message: '{"key1": "value1", "key2": 20}'
-      headers:
-        Authorization: "Bearer {{ token }}"
+      bearer_auth: my_token
 
 connections:
   "1":

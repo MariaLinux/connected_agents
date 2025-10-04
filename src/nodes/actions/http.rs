@@ -77,11 +77,38 @@ impl NodeExecutor for ActionHttpExecutor {
             let mut output_data = input;
             match method.to_uppercase().as_str() {
             "GET" => {
-                let res = reqwest::get(url).await?;
+                let client = reqwest::Client::new();
+                let mut builder = client.get(url);
+                if let Some(basic_auth) = parameters.get("basic_auth") {
+                    if let Some(username) = basic_auth.get("username") {
+                        if let Some(password) = basic_auth.get("password") {
+                            let username_str = username.as_str().unwrap_or("");
+                            let password_str = password.as_str().unwrap_or("");
+                            builder = builder.basic_auth(username_str, Some(password_str));
+                        }
+                    }
+                }
+                if let Some(bearer_auth) = parameters.get("bearer_auth") {
+                    builder = builder.bearer_auth(bearer_auth.as_str().unwrap_or(""));
+                }
+                let res = builder.send().await?;
                 process_response(res, &mut output_data).await?;
             }
             "POST" => {
                 let client = reqwest::Client::new();
+                let mut builder = client.post(url);
+                if let Some(basic_auth) = parameters.get("basic_auth") {
+                    if let Some(username) = basic_auth.get("username") {
+                        if let Some(password) = basic_auth.get("password") {
+                            let username_str = username.as_str().unwrap_or("");
+                            let password_str = password.as_str().unwrap_or("");
+                            builder = builder.basic_auth(username_str, Some(password_str));
+                        }
+                    }
+                }
+                if let Some(bearer_auth) = parameters.get("bearer_auth") {
+                    builder = builder.bearer_auth(bearer_auth.as_str().unwrap_or(""));
+                }
 
                 if let Some(data) = parameters.get("data") {
                     if let Some(format) = data.get("format") {
@@ -89,7 +116,7 @@ impl NodeExecutor for ActionHttpExecutor {
                             "json" => {
                                 if let Some(json_str) = data.get("json_message") {
                                     let _json = json!(json_str.as_str().unwrap_or("{}"));
-                                    let res = client.post(url).json(&_json).send().await?;
+                                    let res = builder.json(&_json).send().await?;
                                     process_response(res, &mut output_data).await?;
                                 }
                             }
@@ -107,7 +134,7 @@ impl NodeExecutor for ActionHttpExecutor {
                                             }
                                         }
                                         if !params.is_empty() {
-                                            let res = client.post(url).form(&params).send().await?;
+                                            let res = builder.form(&params).send().await?;
                                             process_response(res, &mut output_data).await?;
                                         }
                                     }
@@ -116,7 +143,7 @@ impl NodeExecutor for ActionHttpExecutor {
                             _ => {
                                 if let Some(raw_message) = data.get("raw_message") {
                                     let _raw = raw_message.as_str().unwrap_or("").to_string();
-                                    let res = client.post(url).body(_raw).send().await?;
+                                    let res = builder.body(_raw).send().await?;
                                     process_response(res, &mut output_data).await?;
                                 }
                             }
