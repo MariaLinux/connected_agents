@@ -20,8 +20,15 @@ nodes:
     plugin: http
     type: action
     parameters:
-      url: "https://api.example.com/data"
+      url: "http://httpbin.org/post"
       method: POST
+      data:
+        format: json
+        raw_message: "raw message"
+        form_parameters:
+          - key1: value1
+          - key2: value2
+        json_message: '{"key1": "value1", "key2": 20}'
       headers:
         Authorization: "Bearer {{ token }}"
 
