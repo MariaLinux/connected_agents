@@ -76,9 +76,15 @@ impl NodeExecutor for ActionHttpExecutor {
             println!("🌐 HTTP {}: {}", method, url);
             let mut output_data = input;
             match method.to_uppercase().as_str() {
-            "GET" => {
+            "GET" | "DELETE" | "PATCH" | "PUT" => {
                 let client = reqwest::Client::new();
-                let mut builder = client.get(url);
+                let mut builder = match method.to_uppercase().as_str() {
+                    "GET" => client.get(url),
+                    "DELETE" => client.delete(url),
+                    "PATCH" => client.patch(url),
+                    "PUT" => client.put(url),
+                    _ => Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, "Unsupported method")))?,
+                };
                 if let Some(basic_auth) = parameters.get("basic_auth") {
                     if let Some(username) = basic_auth.get("username") {
                         if let Some(password) = basic_auth.get("password") {
@@ -208,5 +214,3 @@ impl NodeExecutorFactory for ActionHttpFactory {
         "http"
     }
 }
-
-//TODO: implement http DELETE, PATCH, PUT

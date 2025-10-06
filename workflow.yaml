@@ -35,10 +35,35 @@ nodes:
         - Content-Type: application/json
         - Accept: application/json
         - Host: httpbin.org
-        
+    
+  - id: 4
+    name: Delete
+    plugin: http
+    type: action
+    parameters:
+      url: "http://httpbun.com/delete"
+      method: DELETE
+  
+  - id: 5
+    name: Patch
+    plugin: http
+    type: action
+    parameters:
+      url: "http://httpbun.com/patch"
+      method: PATCH
+      
+  - id: 6
+    name: Put
+    plugin: http
+    type: action
+    parameters:
+      url: "http://httpbun.com/put"
+      method: PUT        
 
 connections:
   "1":
     - to: 2
   "2":
-    - to: 3
+    - to: 4
+    - to: 5
+    - to: 6
