@@ -20,9 +20,12 @@ impl FlowGraph {
         }
     }
 
-    pub fn build_graph(&mut self, workflow: &Workflow) {
+    pub fn build_graph(&mut self, workflow: &Workflow, enabled_plugins: Vec<&str>) {
         // Add nodes to graph  
         for node in &workflow.nodes {
+              if !enabled_plugins.contains(&node.plugin.as_str()) {
+                  continue;
+              }
               let idx = self.graph.add_node(node.clone());
               self.id_to_index.insert(node.id, idx);
               self.index_to_id.insert(idx, node.id);

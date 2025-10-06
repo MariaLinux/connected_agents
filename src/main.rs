@@ -53,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("📋 Loaded workflow with {} nodes", workflow.nodes.len());
 
     let mut flow_graph = FlowGraph::new();
-    flow_graph.build_graph(&workflow);
+    flow_graph.build_graph(&workflow, registry.enabled_plugins());
 
     // Validate DAG
     if !flow_graph.is_valid() {
