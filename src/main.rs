@@ -8,7 +8,7 @@ mod args;
 use clap::Parser;
 use config::{Workflow, Node, WorkflowData, WorkflowDataType, Settings};
 use registry::NodeRegistry;
-use nodes::{TriggerFactory, ActionHttpFactory, FunctionFactory};
+use nodes::{TriggerFactory, ActionHttpFactory, ActionSendMailFactory, FunctionFactory};
 use flow::FlowGraph;
 use traits::NodeExecutorFactory;
 use args::{Args};
@@ -18,6 +18,7 @@ use petgraph::{Graph, Direction};
 
 use std::collections::HashMap;
 use std::fs;
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -35,8 +36,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // Initialize plugin registry
     let mut registry = NodeRegistry::new();
+    // register trigger plugins
     try_register(&mut registry, &settings, TriggerFactory);
+    // register action plugins
     try_register(&mut registry, &settings, ActionHttpFactory);
+    try_register(&mut registry, &settings, ActionSendMailFactory);
+    // register function plugins
     try_register(&mut registry, &settings, FunctionFactory);
     
     println!("📦 Registered node types: {:?}", registry.supported_types());
