@@ -2,6 +2,8 @@ use crate::traits::{NodeExecutor, NodeExecutorFactory};
 
 use std::collections::HashMap;
 
+static SEPARATOR: &str = "::";
+
 pub struct NodeRegistry {
     factories: HashMap<String, Box<dyn NodeExecutorFactory>>,
     enabled_plugins: Vec<String>,
@@ -21,12 +23,14 @@ impl NodeRegistry {
     {
         let node_type = factory.supported_type().to_string();
         let plugin_name = factory.plugin_name().to_string();
+        let key = node_type.clone() + SEPARATOR + plugin_name.clone().as_str();
         self.enabled_plugins.push(plugin_name);
-        self.factories.insert(node_type, Box::new(factory));
+        self.factories.insert(key, Box::new(factory));
     }
 
-    pub fn create_executor(&self, node_type: &str) -> Option<Box<dyn NodeExecutor>> {
-        self.factories.get(node_type).map(|factory| factory.create())
+    pub fn create_executor(&self, node_type: &str, plugin_name: &str) -> Option<Box<dyn NodeExecutor>> {
+        let key = node_type.to_string() + SEPARATOR + plugin_name;
+        self.factories.get(key.as_str()).map(|factory| factory.create())
     }
 
     pub fn supported_types(&self) -> Vec<&str> {

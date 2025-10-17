@@ -50,11 +50,29 @@ impl FlowGraph {
     }
 
     // Get execution order
-    pub fn get_execution_order(&self) -> Vec<NodeIndex> {
+    pub fn get_execution_order(&mut self) -> Vec<NodeIndex> {
+        // Filter nodes that are part of the connections (have at least one incoming or outgoing edge)
+        let connected_nodes: Vec<NodeIndex> = self.graph.node_indices()
+            .filter(|&idx| self.graph.edges(idx).next().is_some() || self.graph.edges_directed(idx, petgraph::Incoming).next().is_some())
+            .collect();
+
+        let filtered = self.graph.filter_map(
+            |idx, node| if connected_nodes.contains(&idx) { Some(node.clone()) } else { None },
+            |_, edge| Some(edge.clone())
+        );
+        
+        self.graph = filtered;
+        self.id_to_index.clear();
+        self.index_to_id.clear();
+        
+        for idx in self.graph.node_indices() {
+            let node = &self.graph[idx];
+            self.id_to_index.insert(node.id, idx);
+            self.index_to_id.insert(idx, node.id);
+        }
+        
+        // Perform a topological sort on the subgraph
         toposort(&self.graph, None)
-            .expect("Graph should be acyclic at this point")
+            .expect("Subgraph should be acyclic at this point")
     }
 }
-
-
-

@@ -58,12 +58,25 @@ nodes:
     type: action
     parameters:
       url: "http://httpbun.com/put"
-      method: PUT        
+      method: PUT
+
+  - id: 7
+    name: Send Mail
+    plugin: send_mail
+    type: action
+    parameters:
+      from: "sender@gmail.com"
+      reply_to: "sender@gmail.com"
+      to: "receiver@gmail.com"
+      subject: "Test Subject"
+      body: "Test Body"
+      smtp_host: smtp.gmail.com
+      smtp_port: 465
+      smtp_user: "sender@gmail.com"
+      smtp_password: "__PASSWORD__"
 
 connections:
   "1":
     - to: 2
   "2":
-    - to: 4
-    - to: 5
-    - to: 6
+    - to: 7

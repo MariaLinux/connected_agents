@@ -20,7 +20,9 @@ async fn process_response(res: Response, output_data: &mut WorkflowData)
     let content_type = headers.get(CONTENT_TYPE).unwrap();
     println!("Headers: {:#?}\n", content_type);
     metadata.insert("metadata".to_string(), json!({
-        "status": res.status().as_u16(),
+        "http_status": res.status().as_u16(),
+        "subject": "http module",
+        "body": "http body"
     }));
 
     let content_type_byte = content_type.as_bytes();

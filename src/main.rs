@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("📊 Execution order:");
     for (i, &node_idx) in execution_order.iter().enumerate() {
         let node = &flow_graph.graph[node_idx];
-        println!("  {}. {} ({})", i + 1, node.name, node.node_type);
+        println!("  {}. {} ({}), idx: {:?}", i+1, node.name, node.node_type, node_idx);
     }
 
     // Execute workflow
@@ -111,7 +111,7 @@ async fn execute_workflow(
 
         // Get the appropriate executor
         let executor = registry
-            .create_executor(&node.node_type)
+            .create_executor(&node.node_type, &node.plugin)
             .ok_or_else(|| format!("No executor found for node type: {}", node.node_type))?;
 
         // Collect input data from predecessor nodes
